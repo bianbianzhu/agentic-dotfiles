@@ -156,8 +156,8 @@ log(`Inventoried ${docs.length} doc(s); fanning out adversarial verifiers (mode=
 // ── Phase 2: adversarial per-doc verification (parallel, read-only) ──────────
 phase('Verify')
 const audited = await parallel(
-  docs.map((d) => () =>
-    agent(
+  docs.map((d) => async () => {
+    const a = await agent(
       [
         'You are an ADVERSARIAL documentation auditor. The premise is CODE IS AUTHORITATIVE and the',
         `documentation drifts. Your brief is to find evidence that ${d.path} is wrong, sloppy, or`,
@@ -200,14 +200,19 @@ const audited = await parallel(
         '(total claims/comments you assessed), and the findings array.',
       ].join('\n'),
       { label: `audit:${d.path}`, phase: 'Verify', schema: DOC_AUDIT_SCHEMA, agentType: 'Explore' },
-    ),
-  ),
+    )
+    // Doc identity comes from the inventory, never from the agent. `doc` is a
+    // free-form string in DOC_AUDIT_SCHEMA, so a verifier that had been talked
+    // into returning someone else's path would still validate — and in fix mode
+    // that path becomes the apply agent's write target.
+    return a && { ...a, doc: d.path }
+  }),
 )
 
 // ── Phase 3: dedup + severity-rank ──────────────────────────────────────────
 phase('Report')
 const results = audited.filter(Boolean)
-const allFindings = results.flatMap((a) => (a.findings || []).map((f) => ({ doc: a.doc, ...f })))
+const allFindings = results.flatMap((a) => (a.findings || []).map((f) => ({ ...f, doc: a.doc })))
 
 const seen = new Set()
 const deduped = []

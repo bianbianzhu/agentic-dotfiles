@@ -60,7 +60,7 @@ flowchart TD
     C --> S[Parallel verification subagents]
     S --> R[Drift report by severity]
     R --> FX[Apply fixes]
-    C --> W[Write mode: one lens per page]
+    C --> W[Write mode: one lens per page<br/>default, deliberate fusion OK]
     W --> P[Style principles + optional voice]
     P --> V[Verify every claim before done]
 
