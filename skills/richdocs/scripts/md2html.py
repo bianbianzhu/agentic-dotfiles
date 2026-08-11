@@ -8,7 +8,7 @@
 Two output modes:
 
 - Multi-file (default): writes <out>/<stem>.html + a copy of the markdown +
-  design-tokens.json. The HTML fetches both at runtime (cache: no-store), so
+  <stem>.tokens.json. The HTML fetches both at runtime (cache: no-store), so
   it needs an HTTP server — use serve.py; file:// blocks fetch.
 - --inline: one self-contained <stem>.html with the markdown and tokens
   embedded as window globals. Opens over file:// (CDN network still required).

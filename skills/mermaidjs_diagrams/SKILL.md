@@ -169,7 +169,8 @@ Analyze diagrams to ensure they stay within cognitive load thresholds. Runs
 against `.mmd`, `.md`, and `.markdown` files via Mermaid's canonical parser —
 `architecture-beta`, nested subgraphs, and edge decorators all parse. A
 directory argument expands **one level only**, not the whole tree; for nested
-trees expand paths yourself: `$(find docs -name '*.md' -o -name '*.mmd')`.
+trees expand paths yourself:
+`$(find docs -name '*.md' -o -name '*.mmd' -o -name '*.markdown')`.
 
 ```bash
 bun run .claude/skills/mermaidjs_diagrams/scripts/mermaid_complexity.ts path/to/docs/
