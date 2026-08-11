@@ -28,7 +28,6 @@ updating.
 | `VisualComplexityExceedsCritical` | Split by **lens** (architecture vs data-flow vs sequence), not just by component. Same nodes, different edge set per diagram. |
 | `SubgraphNestingTooDeep` | Flatten to depth <=2. Replace the innermost subgraph with a separate diagram referenced by link, or compound labels on the parent level. |
 | `ParserFailure` | Fix the syntax error. Cross-reference `test_complexity.md` §1–§2 and §11–§30 for the canonical syntax of each supported diagram kind. |
-| `ParserDegraded` | Warn that the canonical parser fell back to regex and metrics are approximate. Same fixes as `ParserFailure`; rewrite in a canonical form the parser handles. |
 
 > **Alternative fix pattern** for `NodeCountExceedsCognitiveLimit` and
 > `NodeCountExceedsHardLimit` when you have multiple semi-independent
@@ -618,10 +617,6 @@ test_complexity_recommend.md:N-M: ParserFailure not_a_known_diagram_type yielded
 `ParserFailure` short-circuits every other check for the fence — when the
 parser returns 0 nodes, node-count and VCS metrics would be meaningless, so
 the linter suppresses all other codes for that block.
-
-A sibling code, `ParserDegraded` (warning), fires when the canonical
-parser extracted *something* via regex fallback but not a real AST. Treat
-its numbers as approximate.
 
 ### Recommendation
 

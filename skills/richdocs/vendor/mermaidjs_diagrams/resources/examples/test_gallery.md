@@ -6,7 +6,8 @@ mermaid-js. Examples are drawn from the canonical demo HTML pages at
 `packages/mermaid/src/docs/syntax/*.md` when the demo was too large).
 
 **Purpose**
-- Serves as a regression fixture for `scripts/find_mermaid_fences.ts`.
+- Serves as a regression fixture for the markdown fence extraction in
+  `scripts/mermaid_complexity.ts`.
 - Documents which diagrams parse via the Langium grammar package
   (`@mermaid-js/parser`) versus the legacy JISON grammars bundled inside
   `packages/mermaid/src/diagrams/*/parser/*.jison`.

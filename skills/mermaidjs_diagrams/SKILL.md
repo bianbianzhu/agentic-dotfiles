@@ -13,6 +13,10 @@ is the difficulty threshold — this skill enforces limits via automated complex
 
 Diagrams live as ` ```mermaid ` code fences inside `.md` files.
 
+**First run only:** `node_modules/` is not shipped with the skill. Run this
+once before any `bun run` below:
+`bun install --cwd .claude/skills/mermaidjs_diagrams/scripts --frozen-lockfile`
+
 ---
 
 # Required for every diagram
@@ -161,9 +165,10 @@ Flowchart diagrams with Font Awesome (`fa:fa-icon`) need no `--iconPacks` flag.
 # Complexity Analysis
 
 Analyze diagrams to ensure they stay within cognitive load thresholds. Runs
-against `.mmd` and `.md` files (and directories of either) via Mermaid's
-canonical parser — `architecture-beta`, nested subgraphs, and edge decorators
-all parse correctly.
+against `.mmd` and `.md` files via Mermaid's canonical parser —
+`architecture-beta`, nested subgraphs, and edge decorators all parse correctly.
+A directory argument is expanded **one level only**, not the whole tree — for
+nested trees expand the paths yourself, e.g. `$(find docs -name '*.md')`.
 
 ```bash
 bun run .claude/skills/mermaidjs_diagrams/scripts/mermaid_complexity.ts path/to/docs/
@@ -173,16 +178,19 @@ bun run .claude/skills/mermaidjs_diagrams/scripts/mermaid_complexity.ts path/to/
 
 ## Output format
 
-Ruff-style: one finding per line, **silent on clean runs**:
+Ruff-style: one finding per line, **silent on clean runs**; errors before
+warnings, paths relative to the working directory. One line from a real run
+against the bundled fixture:
 
 ```
-path/to/file.md:100-108: NodeCountExceedsAcceptable nodes=24 preset=high
+resources/examples/test_complexity.md:108-145: NodeCountExceedsAcceptable 36 nodes > 35 acceptable threshold
 ```
+
+> Full transcript of that run: `resources/complexity_output.md`
 
 | Code | Severity | Meaning |
 |------|----------|---------|
 | `ParserFailure` | error | Multi-line diagram yielded 0 nodes |
-| `ParserDegraded` | warn | Regex fallback used (no canonical parser available for this diagram type) |
 | `NodeCountExceedsHardLimit` | error | Nodes above absolute cap |
 | `NodeCountExceedsCognitiveLimit` | error | Nodes > 50 (Huang 2020 threshold) |
 | `NodeCountExceedsAcceptable` | warn | Nodes above readability threshold for preset |
@@ -230,7 +238,8 @@ Two complementary tools:
 | `scripts/color_contrast.ts` | Generic WCAG + APCA calculator for any two CSS colors (hex, rgb, oklch, named, etc.) | Ad-hoc pair checks — e.g. sampling colors from a screenshot or comparing theme tokens |
 
 ```bash
-# Audit every diagram in a directory tree (auto-detects mkdocs vs github)
+# Audit every diagram directly inside a directory — one level, not the whole
+# tree (auto-detects mkdocs vs github)
 bun run .claude/skills/mermaidjs_diagrams/scripts/mermaid_contrast.ts docs/
 bun run .claude/skills/mermaidjs_diagrams/scripts/mermaid_contrast.ts docs/ --summary
 bun run .claude/skills/mermaidjs_diagrams/scripts/mermaid_contrast.ts docs/ --json
@@ -473,6 +482,7 @@ when they display in browser previews. Stick to **ASCII-only text** in node labe
 | `resources/color_theming.md` | Conceptual core: HSL encoding, dark/light mode safety, hierarchy, subgraph coloring |
 | `resources/color_palette_recipes.md` | Four palette recipes, a worked example, and the Tailwind v3 hex lookup |
 | `resources/color_host_themed_renderers.md` | Translucent dual-theme fills for host-themed renderers (MkDocs Material) |
+| `resources/complexity_output.md` | Verbatim analyser run against the bundled fixture — how to read each finding |
 | `resources/diagram_organization.md` | Lens naming, dual-density approach, README sync |
 | `resources/layout_algorithms.md` | `layout` + `look` config for dagre / elk / tidy-tree / cose-bilkent, ELK tuning keys, per-diagram-type support |
 | `resources/pattern_render_markdown.md` | Full render-from-markdown documentation |
