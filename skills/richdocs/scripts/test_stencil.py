@@ -129,14 +129,24 @@ def test_check_color_accepts_safe_literals(color: str | None) -> None:
     ],
 )
 def test_check_color_rejects_unsafe_values(color: str) -> None:
-    with pytest.raises(ValueError, match="invalid color"):
+    with pytest.raises(ValueError, match="unsafe colour"):
         stencil.check_color(color)
+
+
+def test_check_color_is_injection_filter_not_colour_parser() -> None:
+    """Any alphabetic token passes — the gate is markup safety, not semantics.
+
+    "definitelynotacolor" is inert as markup, so it is accepted here and left
+    for the renderer to ignore. Tightening this to real CSS keywords would mean
+    shipping and maintaining the named-colour list for no security gain.
+    """
+    assert stencil.check_color("definitelynotacolor") == "definitelynotacolor"
 
 
 def test_build_svg_rejects_markup_injection() -> None:
     """REGRESSION: --color was substituted into the SVG unescaped."""
     stencils = stencil.load_stencils()
-    with pytest.raises(ValueError, match="invalid color"):
+    with pytest.raises(ValueError, match="unsafe colour"):
         stencil.build_svg(
             stencils["mxgraph.aws4/lambda"], color='"/><script>alert(1)</script>'
         )
@@ -145,7 +155,7 @@ def test_build_svg_rejects_markup_injection() -> None:
 def test_build_grid_svg_rejects_markup_injection(tiny_zip: Path) -> None:
     stencils = stencil.load_stencils(tiny_zip)
     ids = stencil.filter_ids(stencils)
-    with pytest.raises(ValueError, match="invalid color"):
+    with pytest.raises(ValueError, match="unsafe colour"):
         stencil.build_grid_svg(stencils, ids, color='"/><script>alert(1)</script>')
 
 
@@ -223,7 +233,7 @@ def test_cli_grid_no_match_exits_1(
 
 def test_cli_grid_bad_color_writes_nothing(tmp_path: Path) -> None:
     out_file = tmp_path / "grid.svg"
-    with pytest.raises(ValueError, match="invalid color"):
+    with pytest.raises(ValueError, match="unsafe colour"):
         _run(["grid", "s3", "--out", str(out_file), "--color", '"/><script>'])
     assert not out_file.exists()
 
@@ -239,7 +249,7 @@ def test_main_reports_bad_color_and_exits_2(
     with pytest.raises(SystemExit) as excinfo:
         stencil.main()
     assert excinfo.value.code == 2
-    assert "invalid color" in capsys.readouterr().err
+    assert "unsafe colour" in capsys.readouterr().err
 
 
 def test_main_dispatches(

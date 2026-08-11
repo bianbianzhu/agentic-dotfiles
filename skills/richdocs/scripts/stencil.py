@@ -36,9 +36,13 @@ GRID_ICON = 72.0
 GRID_LABEL_PT = 9.0
 
 # A colour is substituted into the SVG fragment as raw markup, so it must not be
-# able to close an attribute or open a tag. Allowlist the two safe shapes:
-# a hex triplet/quad, or a bare CSS colour keyword.
-COLOR_RE = re.compile(r"#(?:[0-9A-Fa-f]{3,4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})|[A-Za-z]+")
+# able to close an attribute or open a tag. This is an INJECTION filter, not a
+# colour parser: it admits a hex literal or any all-alphabetic token, so a
+# non-colour word like "banana" passes and simply renders as nothing. Both
+# shapes are inert as markup, which is the only property being enforced.
+# Functional forms — rgb(), hsl(), oklch() — are rejected for their parentheses.
+# The whole pattern is grouped so it stays correct if reused with match/search.
+COLOR_RE = re.compile(r"(?:#(?:[0-9A-Fa-f]{3,4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})|[A-Za-z]+)")
 
 
 # ── Core ───────────────────────────────────────────────────────────────────
@@ -92,16 +96,19 @@ def close_matches(
 
 
 def check_color(color: str | None) -> str | None:
-    """Return color if it is a safe literal, else raise ValueError.
+    """Return the value unchanged if it cannot inject markup, else raise.
 
     Substitution is textual, so an unvalidated value can break out of the
-    attribute it lands in and inject markup (`"/><script>...`).
+    attribute it lands in and inject markup (`"/><script>...`). This checks
+    only that the value is inert, not that it names a real colour — an
+    alphabetic token the renderer doesn't recognise is the caller's problem.
     """
     if color is None or COLOR_RE.fullmatch(color):
         return color
     raise ValueError(
-        f"invalid color {color!r}: expected #rgb, #rgba, #rrggbb, #rrggbbaa, "
-        "or a CSS colour name"
+        f"unsafe colour {color!r}: expected a hex literal (#rgb, #rgba, "
+        "#rrggbb, #rrggbbaa) or an alphabetic name; functional forms like "
+        "rgb()/hsl()/oklch() are not accepted"
     )
 
 
@@ -272,7 +279,7 @@ def build_parser() -> argparse.ArgumentParser:
     extract_p.add_argument(
         "--color",
         help="Replace currentColor with this value (e.g. '#ED7100'); "
-        "hex or a CSS colour name only",
+        "hex literal or an alphabetic name — rgb()/hsl()/oklch() are rejected",
     )
     extract_p.add_argument(
         "--size", type=float, help="Output width in px (height scales proportionally)"
@@ -287,7 +294,8 @@ def build_parser() -> argparse.ArgumentParser:
     grid_p.add_argument("--out", required=True, help="Output SVG file")
     grid_p.add_argument(
         "--color",
-        help="Replace currentColor with this value; hex or a CSS colour name only",
+        help="Replace currentColor with this value; hex literal or an "
+        "alphabetic name — rgb()/hsl()/oklch() are rejected",
     )
     grid_p.add_argument(
         "--limit", type=int, default=24, help="Max stencils in the sheet (default: 24)"
