@@ -20,6 +20,13 @@ path data + re-encoded `shape=stencil(...)` payloads by
 registry can map to any shape without re-running against the draw.io source;
 adjust `SELECT_LIBS_*` in that script to add/trim libraries.
 
+Reproducibility caveat: `extract_stencils.py` is NOT distributed with this
+repository — there is no `infra/` tree here. It is recorded as the origin of
+the vendored data, not as something you can run or re-run locally, and the
+`SELECT_LIBS_*` note above applies only where that script lives. Regenerating
+or extending `stencils.json.zip` from this repo alone would mean writing a new
+extractor against the draw.io source.
+
 The icons depict third-party cloud-provider products and incorporate those
 providers' trademarks (e.g. Google Cloud product icons). They are reproduced
 solely to label the corresponding resources in architecture diagrams; all
