@@ -1,12 +1,17 @@
 Vendored diagram stencils
 ==========================
 
-`stencils.json` in this directory contains shape geometry extracted from the
-draw.io / diagrams.net stencil libraries (`stencils.min.js`).
+`stencils.json.zip` in this directory contains shape geometry extracted from
+the draw.io / diagrams.net stencil libraries (`stencils.min.js`).
 
   draw.io (diagrams.net) — https://github.com/jgraph/drawio
   Licensed under the Apache License, Version 2.0.
   Copyright (c) JGraph Ltd.
+
+A verbatim copy of that licence is distributed alongside this NOTICE as
+`LICENSE-Apache-2.0.txt`, per Apache-2.0 §4(a). It covers the vendored
+stencil data only; the rest of this repository is MIT (see the root
+`LICENSE`).
 
 The shapes are decoded from their base64/DEFLATE form and transcribed to SVG
 path data + re-encoded `shape=stencil(...)` payloads by

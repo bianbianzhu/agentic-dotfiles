@@ -325,7 +325,7 @@ def write_multi(
     build_id: str,
     theme_css: str = "",
 ) -> Path:
-    """Write <out>/<stem>.html + <stem>.md copy + design-tokens.json copy."""
+    """Write <out>/<stem>.html + <stem>.md copy + <stem>.tokens.json copy."""
     out_dir.mkdir(parents=True, exist_ok=True)
     stem = doc.stem
     tokens = json.loads(tokens_path.read_text(encoding="utf-8"))

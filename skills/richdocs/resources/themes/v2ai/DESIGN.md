@@ -2,7 +2,9 @@
 
 Distilled from the **V2 AI Design System**. Source of truth for how V2 AI looks and sounds. Use this to steer the brandvoice agent skill.
 
-**Theme:** light-mode-native (white/black/yellow), with a full dark mode · **v2** · Colour engineering ported from the OsakaNights core (OKLCH bands, golden-angle chart hues, CVD validation) and re-derived against V2's own hues. Every number in this document was computed, not estimated. Palettes are validated with `dataviz/scripts/validate_palette.js`.
+**Theme:** light-mode-native (white/black/yellow), with a full dark mode · **v2** · Colour engineering ported from the OsakaNights core (OKLCH bands, golden-angle chart hues, CVD validation) and re-derived against V2's own hues. Every number in this document was computed, not estimated. Palettes were validated with `dataviz/scripts/validate_palette.js`.
+
+> **Reproducibility caveat.** `validate_palette.js` is **not distributed with this repository** — no copy exists under `skills/`, and no `dataviz` skill ships here. The validation figures quoted below (§10.1, §10.2) are recorded results from a run elsewhere; they cannot be re-derived locally from this repo alone. Treat them as reported values, not as output you can regenerate, and re-verify with your own tooling before relying on them for an accessibility claim.
 
 ---
 
@@ -302,7 +304,7 @@ Adjacent steps: 141.4 · 132.2 · 138.9 · 133.3 · 141.7 · 137.5 · 137.5 (mea
 | 7 | 269.0° | `#5471D8` | 4.44:1 | `#6383F2` | 6.06:1 |
 | 8 | 146.1° *(ENABLE)* | `#249239` | 4.00:1 | `#32A646` | 6.68:1 |
 
-**Validated** with `validate_palette.js` (Machado-2009 CVD, CIE76 ΔE), target adjacent ΔE ≥ 12:
+**Validated** with `validate_palette.js` (Machado-2009 CVD, CIE76 ΔE), target adjacent ΔE ≥ 12 — reported results only; that script is not distributed with this repo, so these figures are not locally reproducible (see the caveat at the top of this file):
 
 - **Light, surface `#FFFFFF`** — lightness band PASS · chroma floor PASS · **worst adjacent CVD ΔE 27.8** (`#008E81` ↔ `#A455B2`, deuteranopia) · contrast vs surface PASS. All checks pass.
 - **Dark, surface `#000000`** — lightness band PASS · chroma floor PASS · **worst adjacent CVD ΔE 29.1** (`#00A294` ↔ `#BA64C9`, deuteranopia) · contrast vs surface PASS. All checks pass.

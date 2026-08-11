@@ -11,6 +11,12 @@ Markdown stays the source of truth. This skill generates an HTML *companion*
 that renders the same `.md` with higher fidelity — interactive graphs, tinted
 provider icons, branded theming — and serves it reliably on localhost.
 
+> **Never render untrusted markdown.** The viewer assigns parsed markdown
+> straight to `innerHTML` with no sanitiser and initialises mermaid with
+> `securityLevel: "loose"`, so any HTML or script in the `.md` (including
+> inside mermaid fences) executes with the page's origin. Only render docs
+> you or your team wrote.
+
 ## Route by intent
 
 | Intent | Do this |
@@ -114,7 +120,7 @@ uv run --no-project .claude/skills/richdocs/scripts/showcase.py --theme osakanig
     only — fully self-contained.
 
 - **Multi-file (default, `--out` = `tmp/richdocs`)** — writes `<stem>.html`
-  plus a copy of the `.md` and `design-tokens.json`. The HTML fetches the
+  plus a copy of the `.md` and `<stem>.tokens.json`. The HTML fetches the
   paired markdown at runtime (`?v=<BUILD_ID>`, `cache: no-store`) and renders
   client-side. Edit the copied `.md`, refresh the browser: live authoring
   loop. **Requires `serve.py`** — `file://` blocks fetch by design.
