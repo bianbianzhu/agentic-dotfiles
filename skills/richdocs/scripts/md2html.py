@@ -15,8 +15,8 @@ Two output modes:
 
 The viewer renders markdown client-side (marked), with fenced-block upgrades:
 ```mermaid (mermaid.run), ```cytoscape (cytoscape+dagre, lazy-loaded), and
-```plotly (plotly.js, lazy-loaded) — all themed from design-tokens.json with
-a light/dark toggle.
+```plotly (plotly.js, lazy-loaded) — all themed from the loaded design tokens
+with a light/dark toggle.
 
 This module is the *generator*. The page it generates lives in `assets/` as three
 editable files (viewer.html / viewer.css / viewer.js) — see ADR-008. Nothing here
