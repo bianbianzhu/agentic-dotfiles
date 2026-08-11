@@ -23,9 +23,12 @@ $ echo $?
 
 - **One finding per line**, `path:line_start-line_end: Code detail`. The line
   range is the mermaid fence's span in the source file.
-- **Errors first, then warnings**, each band in source order. So a warning
-  early in the file (`108-145`) prints after an error late in it (`469-498`);
-  the listing is not a single top-to-bottom pass.
+- **Errors first, then warnings**; within a band, findings sort by a plain
+  string compare on the `path:start-end` location (`mermaid_complexity.ts`
+  §main). That is *not* source order — line numbers are compared as text, so
+  `70-90` lands after `671-707`. It only looks like file order above because
+  these fences all start at three-digit lines. Read the line range, don't
+  infer position from the ordering.
 - **Detail text is prose, not key-value pairs.** The finding states the
   measured value against the threshold it breached
   (`36 nodes > 35 acceptable threshold`), so a line stands on its own without

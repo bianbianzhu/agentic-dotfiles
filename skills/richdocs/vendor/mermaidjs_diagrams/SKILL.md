@@ -13,8 +13,9 @@ is the difficulty threshold — this skill enforces limits via automated complex
 
 Diagrams live as ` ```mermaid ` code fences inside `.md` files.
 
-**First run only:** `node_modules/` is not shipped with the skill. Run this
-once before any `bun run` below:
+**Dependencies:** `node_modules/` is not shipped. `bun run` auto-installs from
+the committed lockfile, so every command below works as written; `bun test`
+and `make ci` do **not** — install first with
 `bun install --cwd .claude/skills/mermaidjs_diagrams/scripts --frozen-lockfile`
 
 ---
@@ -165,10 +166,10 @@ Flowchart diagrams with Font Awesome (`fa:fa-icon`) need no `--iconPacks` flag.
 # Complexity Analysis
 
 Analyze diagrams to ensure they stay within cognitive load thresholds. Runs
-against `.mmd` and `.md` files via Mermaid's canonical parser —
-`architecture-beta`, nested subgraphs, and edge decorators all parse correctly.
-A directory argument is expanded **one level only**, not the whole tree — for
-nested trees expand the paths yourself, e.g. `$(find docs -name '*.md')`.
+against `.mmd`, `.md`, and `.markdown` files via Mermaid's canonical parser —
+`architecture-beta`, nested subgraphs, and edge decorators all parse. A
+directory argument expands **one level only**, not the whole tree; for nested
+trees expand paths yourself: `$(find docs -name '*.md' -o -name '*.mmd')`.
 
 ```bash
 bun run .claude/skills/mermaidjs_diagrams/scripts/mermaid_complexity.ts path/to/docs/
@@ -179,14 +180,12 @@ bun run .claude/skills/mermaidjs_diagrams/scripts/mermaid_complexity.ts path/to/
 ## Output format
 
 Ruff-style: one finding per line, **silent on clean runs**; errors before
-warnings, paths relative to the working directory. One line from a real run
-against the bundled fixture:
+warnings, then a string sort on location (not source order). One line from a
+real run — full transcript in `resources/complexity_output.md`:
 
 ```
 resources/examples/test_complexity.md:108-145: NodeCountExceedsAcceptable 36 nodes > 35 acceptable threshold
 ```
-
-> Full transcript of that run: `resources/complexity_output.md`
 
 | Code | Severity | Meaning |
 |------|----------|---------|
