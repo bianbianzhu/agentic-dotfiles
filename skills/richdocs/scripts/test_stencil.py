@@ -107,6 +107,48 @@ def test_build_grid_svg(tiny_zip: Path) -> None:
     assert "#123456" in svg
 
 
+# ── Colour validation (the substitution is raw markup) ──────────────────────
+@pytest.mark.parametrize(
+    "color", ["#abc", "#abcd", "#AABBCC", "#aabbccdd", "red", "rebeccapurple", None]
+)
+def test_check_color_accepts_safe_literals(color: str | None) -> None:
+    assert stencil.check_color(color) == color
+
+
+@pytest.mark.parametrize(
+    "color",
+    [
+        '"/><script>alert(1)</script>',
+        '#fff" onload="alert(1)',
+        "red;stroke:url(#x)",
+        "url(#gradient)",
+        "rgb(1,2,3)",
+        "#12345",
+        "",
+        "<>",
+    ],
+)
+def test_check_color_rejects_unsafe_values(color: str) -> None:
+    with pytest.raises(ValueError, match="invalid color"):
+        stencil.check_color(color)
+
+
+def test_build_svg_rejects_markup_injection() -> None:
+    """REGRESSION: --color was substituted into the SVG unescaped."""
+    stencils = stencil.load_stencils()
+    with pytest.raises(ValueError, match="invalid color"):
+        stencil.build_svg(
+            stencils["mxgraph.aws4/lambda"], color='"/><script>alert(1)</script>'
+        )
+
+
+def test_build_grid_svg_rejects_markup_injection(tiny_zip: Path) -> None:
+    stencils = stencil.load_stencils(tiny_zip)
+    ids = stencil.filter_ids(stencils)
+    with pytest.raises(ValueError, match="invalid color"):
+        stencil.build_grid_svg(stencils, ids, color='"/><script>alert(1)</script>')
+
+
 # ── CLI dispatch ────────────────────────────────────────────────────────────
 def _run(argv: list[str]) -> None:
     parser = stencil.build_parser()
@@ -177,6 +219,27 @@ def test_cli_grid_no_match_exits_1(
         _run(["grid", "zzz-nope-zzz", "--out", str(tmp_path / "g.svg")])
     assert excinfo.value.code == 1
     assert "no stencils match" in capsys.readouterr().err
+
+
+def test_cli_grid_bad_color_writes_nothing(tmp_path: Path) -> None:
+    out_file = tmp_path / "grid.svg"
+    with pytest.raises(ValueError, match="invalid color"):
+        _run(["grid", "s3", "--out", str(out_file), "--color", '"/><script>'])
+    assert not out_file.exists()
+
+
+def test_main_reports_bad_color_and_exits_2(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["stencil.py", "extract", "mxgraph.aws4/lambda", "--color", '"/><script>'],
+    )
+    with pytest.raises(SystemExit) as excinfo:
+        stencil.main()
+    assert excinfo.value.code == 2
+    assert "invalid color" in capsys.readouterr().err
 
 
 def test_main_dispatches(
