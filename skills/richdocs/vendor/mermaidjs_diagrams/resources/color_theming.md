@@ -137,6 +137,13 @@ classDef good fill:#1e40af,color:#fff,stroke:#1e3a8a
 | `#7c3aed` (violet-600) | `#6d28d9` (violet-700) | `#fff` | Purple |
 | `#334155` (slate-700) | `#1e293b` (slate-800) | `#fff` | Neutral dark |
 
+> **Border-contrast trap.** The strokes above are a *darker* shade of the same
+> family as the fill. That is fine for text contrast, but such pairs cannot
+> reach the 3:1 fill-vs-stroke ratio that `mermaid_contrast.ts` enforces for
+> borders. Where that gate applies, swap the stroke for the family's light
+> shade instead — see the "AA-Border Variant" section in
+> [color_palette_recipes.md](color_palette_recipes.md).
+
 **Light backgrounds with dark text** (works in both themes):
 
 | Fill | Stroke | Color | Notes |
