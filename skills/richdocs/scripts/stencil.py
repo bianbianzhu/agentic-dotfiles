@@ -18,6 +18,7 @@ import difflib
 import functools
 import io
 import json
+import re
 import sys
 import zipfile
 from collections import Counter
@@ -33,6 +34,15 @@ GRID_COLS = 6
 GRID_CELL = 120.0
 GRID_ICON = 72.0
 GRID_LABEL_PT = 9.0
+
+# A colour is substituted into the SVG fragment as raw markup, so it must not be
+# able to close an attribute or open a tag. This is an INJECTION filter, not a
+# colour parser: it admits a hex literal or any all-alphabetic token, so a
+# non-colour word like "banana" passes and simply renders as nothing. Both
+# shapes are inert as markup, which is the only property being enforced.
+# Functional forms — rgb(), hsl(), oklch() — are rejected for their parentheses.
+# The whole pattern is grouped so it stays correct if reused with match/search.
+COLOR_RE = re.compile(r"(?:#(?:[0-9A-Fa-f]{3,4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})|[A-Za-z]+)")
 
 
 # ── Core ───────────────────────────────────────────────────────────────────
@@ -85,10 +95,28 @@ def close_matches(
     return seen[:n]
 
 
+def check_color(color: str | None) -> str | None:
+    """Return the value unchanged if it cannot inject markup, else raise.
+
+    Substitution is textual, so an unvalidated value can break out of the
+    attribute it lands in and inject markup (`"/><script>...`). This checks
+    only that the value is inert, not that it names a real colour — an
+    alphabetic token the renderer doesn't recognise is the caller's problem.
+    """
+    if color is None or COLOR_RE.fullmatch(color):
+        return color
+    raise ValueError(
+        f"unsafe colour {color!r}: expected a hex literal (#rgb, #rgba, "
+        "#rrggbb, #rrggbbaa) or an alphabetic name; functional forms like "
+        "rgb()/hsl()/oklch() are not accepted"
+    )
+
+
 def build_svg(
     entry: dict[str, Any], *, color: str | None = None, size: float | None = None
 ) -> str:
     """Wrap a stored stencil fragment into a standalone SVG document."""
+    color = check_color(color)
     w = float(entry["w"])
     h = float(entry["h"])
     frag = str(entry["svg"])
@@ -110,6 +138,7 @@ def build_grid_svg(
     cols: int = GRID_COLS,
 ) -> str:
     """Composite the given stencil ids into one labelled contact-sheet SVG."""
+    color = check_color(color)
     n = len(ids)
     rows = (n + cols - 1) // cols
     total_w = cols * GRID_CELL
@@ -199,9 +228,10 @@ def cmd_grid(args: argparse.Namespace) -> None:
     if not ids:
         print(f"error: no stencils match {args.term!r}", file=sys.stderr)
         raise SystemExit(1)
+    svg = build_grid_svg(stencils, ids, color=args.color)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(build_grid_svg(stencils, ids, color=args.color), encoding="utf-8")
+    out.write_text(svg, encoding="utf-8")
     print(f"wrote {out} ({len(ids)} stencils)")
 
 
@@ -247,7 +277,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     extract_p.add_argument("id", help='Stencil id, e.g. "mxgraph.aws4/lambda"')
     extract_p.add_argument(
-        "--color", help="Replace currentColor with this value (e.g. '#ED7100')"
+        "--color",
+        help="Replace currentColor with this value (e.g. '#ED7100'); "
+        "hex literal or an alphabetic name — rgb()/hsl()/oklch() are rejected",
     )
     extract_p.add_argument(
         "--size", type=float, help="Output width in px (height scales proportionally)"
@@ -260,7 +292,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     grid_p.add_argument("term", help="Substring (or pack prefix) to match")
     grid_p.add_argument("--out", required=True, help="Output SVG file")
-    grid_p.add_argument("--color", help="Replace currentColor with this value")
+    grid_p.add_argument(
+        "--color",
+        help="Replace currentColor with this value; hex literal or an "
+        "alphabetic name — rgb()/hsl()/oklch() are rejected",
+    )
     grid_p.add_argument(
         "--limit", type=int, default=24, help="Max stencils in the sheet (default: 24)"
     )
@@ -271,7 +307,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main() -> None:
     args = build_parser().parse_args()
-    args.func(args)
+    try:
+        args.func(args)
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        raise SystemExit(2) from exc
 
 
 if __name__ == "__main__":  # pragma: no cover

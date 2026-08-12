@@ -11,6 +11,13 @@ Markdown stays the source of truth. This skill generates an HTML *companion*
 that renders the same `.md` with higher fidelity — interactive graphs, tinted
 provider icons, branded theming — and serves it reliably on localhost.
 
+> **Never render untrusted markdown.** The viewer assigns parsed markdown
+> straight to `innerHTML` with no sanitiser, so raw HTML in the `.md` becomes
+> live DOM — a `<script>` tag inserted this way does not run, but event-handler
+> attributes (`onerror`, `onload`) and other active markup do. Mermaid also
+> initialises with `securityLevel: "loose"`, which permits HTML in diagram
+> labels. Only render docs you or your team wrote.
+
 ## Route by intent
 
 | Intent | Do this |
@@ -114,7 +121,7 @@ uv run --no-project .claude/skills/richdocs/scripts/showcase.py --theme osakanig
     only — fully self-contained.
 
 - **Multi-file (default, `--out` = `tmp/richdocs`)** — writes `<stem>.html`
-  plus a copy of the `.md` and `design-tokens.json`. The HTML fetches the
+  plus a copy of the `.md` and `<stem>.tokens.json`. The HTML fetches the
   paired markdown at runtime (`?v=<BUILD_ID>`, `cache: no-store`) and renders
   client-side. Edit the copied `.md`, refresh the browser: live authoring
   loop. **Requires `serve.py`** — `file://` blocks fetch by design.
@@ -159,7 +166,10 @@ stencil.py extract "mxgraph.aws4/lambda" --color '#ED7100' --size 64 --out lambd
 ```
 
 Every stencil paints `currentColor`; `--color` tints by string-replace (works
-in every renderer). Omit `--color` and the SVG inherits its parent's
+in every renderer). Because the value lands in the SVG as raw markup, it is
+allowlisted first: a hex literal (`#rgb`/`#rgba`/`#rrggbb`/`#rrggbbaa`) or an
+alphabetic name. Functional forms — `rgb()`, `hsl()`, `oklch()` — are rejected
+and exit 2 with an error. Omit `--color` and the SVG inherits its parent's
 `color` — ideal for inlining into themed HTML. Unknown ID exits 1 with
 close-match suggestions.
 
@@ -197,7 +207,7 @@ Beyond standard markdown + ` ```mermaid `, the HTML companion renders:
   every runtime fetch with `?v=<BUILD_ID>`.
 - **Inline-embed safety**: anything embedded in a `<script>` escapes `</` as
   `<\/` — a stray `</script>` in doc content must not terminate the tag.
-- **Brandpack is data, not code**: re-skin = edit `design-tokens.json` in the
+- **Brandpack is data, not code**: re-skin = edit `<stem>.tokens.json` in the
   output dir and refresh. `FALLBACK_TOKENS` baked into the JS is a soft-fail
   net only, never the source of truth.
 - Outputs land in project-local `tmp/richdocs/` (gitignored), never system

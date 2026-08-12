@@ -60,7 +60,7 @@ flowchart TD
     C --> S[Parallel verification subagents]
     S --> R[Drift report by severity]
     R --> FX[Apply fixes]
-    C --> W[Write mode: one lens per page]
+    C --> W[Write mode: one lens per page<br/>default, deliberate fusion OK]
     W --> P[Style principles + optional voice]
     P --> V[Verify every claim before done]
 
@@ -98,7 +98,7 @@ runs mutating commands — read-only verification only.
 |---------|-------------|
 | Audit reports everything as `unverifiable` | Subagents got the doc but not repo access context — re-launch with explicit paths to the code the doc describes. |
 | Drift report flags intentional divergence | The doc is the contract and the code drifted; the skill asks which is authoritative when ambiguous — answer it, don't suppress the finding. |
-| Rewritten page mixes teaching into reference | Lens discipline lost; split the page — one lens per page is non-negotiable. |
+| Rewritten page mixes teaching into reference | Lens discipline lost; split the page — one lens per page is the default. If the fusion was deliberate and the voice stays consistent, keep it and enforce that consistency instead: purity is a heuristic, not a law (see ADR-7 in [CLAUDE.md](CLAUDE.md)). |
 | Voice output feels like parody | Voice rules layered without the lens base; voice changes register only — re-read lenses.md first, voice.md second. |
 | TOC out of date after a rewrite | Run the `mdtoc` skill (docs >100 lines get a generated TOC, never hand-maintained). |
 | Restructure changed a doc's meaning | Mode contract violated — restructure preserves claims verbatim; anything that looked wrong should have been flagged for audit, not reworded. |

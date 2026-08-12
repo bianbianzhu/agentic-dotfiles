@@ -41,6 +41,12 @@ remain the providers' trademarks — fine for internal architecture docs).
    `currentColor` support (some raster paths). String-replace is deliberately
    chosen over CSS: it works in *every* renderer.
 
+   Because the replacement is raw markup, the value is allowlisted before
+   substitution — a hex literal (`#rgb`/`#rgba`/`#rrggbb`/`#rrggbbaa`) or an
+   alphabetic name. Functional notations (`rgb()`, `hsl()`, `oklch()`) carry
+   punctuation that could close the enclosing attribute, so they are rejected:
+   the CLI exits 2 with an error and writes nothing.
+
 ```bash
 uv run --no-project .claude/skills/richdocs/scripts/stencil.py \
   extract "mxgraph.aws4/lambda" --color '#ED7100' --size 64 --out lambda.svg
@@ -81,6 +87,11 @@ data → Graph(nodes, edges) → deterministic layout → SVG compositor → (ca
    frag = stencil["svg"].replace("currentColor", CATEGORY_COLOR[cat])
    parts.append(f'<g transform="translate({x},{y}) scale({s})">{frag}</g>')
    ```
+
+   A literal `CATEGORY_COLOR` table is safe as written. If the colour comes
+   from anywhere external — CLI input, a config file, doc frontmatter — pass
+   it through `stencil.check_color()` first; the replace is raw markup and
+   will happily inject a `"/><script>` payload otherwise.
 
    Icon-less types fall back to a plain coloured chip — visible, never
    silently dropped.

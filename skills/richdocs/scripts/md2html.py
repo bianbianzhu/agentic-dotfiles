@@ -8,15 +8,15 @@
 Two output modes:
 
 - Multi-file (default): writes <out>/<stem>.html + a copy of the markdown +
-  design-tokens.json. The HTML fetches both at runtime (cache: no-store), so
+  <stem>.tokens.json. The HTML fetches both at runtime (cache: no-store), so
   it needs an HTTP server — use serve.py; file:// blocks fetch.
 - --inline: one self-contained <stem>.html with the markdown and tokens
   embedded as window globals. Opens over file:// (CDN network still required).
 
 The viewer renders markdown client-side (marked), with fenced-block upgrades:
 ```mermaid (mermaid.run), ```cytoscape (cytoscape+dagre, lazy-loaded), and
-```plotly (plotly.js, lazy-loaded) — all themed from design-tokens.json with
-a light/dark toggle.
+```plotly (plotly.js, lazy-loaded) — all themed from the loaded design tokens
+with a light/dark toggle.
 
 This module is the *generator*. The page it generates lives in `assets/` as three
 editable files (viewer.html / viewer.css / viewer.js) — see ADR-008. Nothing here
@@ -325,7 +325,7 @@ def write_multi(
     build_id: str,
     theme_css: str = "",
 ) -> Path:
-    """Write <out>/<stem>.html + <stem>.md copy + design-tokens.json copy."""
+    """Write <out>/<stem>.html + <stem>.md copy + <stem>.tokens.json copy."""
     out_dir.mkdir(parents=True, exist_ok=True)
     stem = doc.stem
     tokens = json.loads(tokens_path.read_text(encoding="utf-8"))

@@ -1126,8 +1126,8 @@ interface DiagramEntry {
 const OPEN_MERMAID_FENCE = /^\s*```mermaid\s*$/;
 const CLOSE_FENCE = /^\s*```\s*$/;
 
-// Extract all fenced ```mermaid blocks from a markdown file.
-// Mirrors find_mermaid_fences.ts with just the fields this script needs.
+// Extract all fenced ```mermaid blocks from a markdown file,
+// keeping just the fields this script needs.
 export function extractMarkdownFences(markdown: string): DiagramEntry[] {
   const lines = markdown.split("\n");
   const entries: DiagramEntry[] = [];

@@ -26,7 +26,7 @@ flowchart LR
     end
     ZIP["assets/stencils.json.zip<br/>draw.io icon packs"]
     subgraph out["tmp/richdocs/"]
-        HTML["DOC.html + DOC.md<br/>+ design-tokens.json"]
+        HTML["DOC.html + DOC.md<br/>+ DOC.tokens.json"]
         SVG["tinted *.svg icons"]
     end
     BROWSER["Browser<br/>http://127.0.0.1:8642"]
@@ -76,7 +76,7 @@ open tmp/richdocs/REVIEW.html
 | `scripts/serve.py` | `127.0.0.1` server with `Cache-Control: no-store`; fixes `file://` fetch blocking |
 | `scripts/stencil.py` | Query/extract tinted SVG icons from the vendored draw.io packs |
 | `assets/stencils.json.zip` | AWS/GCP/Azure/K8s icon library (`assets/NOTICE` for provenance) |
-| `assets/design-tokens.json` | Default neutral brandpack — edit the copy in the output dir to re-skin |
+| `assets/design-tokens.json` | Default neutral brandpack — edit the `<stem>.tokens.json` copy in the output dir to re-skin |
 | `resources/*.md` | Deep dives: serving, stencils, rich blocks, discovery-doc recipes |
 
 Fenced ` ```cytoscape ` and ` ```plotly ` blocks inside the markdown render
