@@ -270,6 +270,8 @@ classDef sgInfra        fill:#f1f5f9,stroke:#475569,color:#334155
 classDef stateStart     fill:#065f46,stroke:#a7f3d0,color:#fff,stroke-width:2px
 classDef stateEnd       fill:#475569,stroke:#cbd5e1,color:#fff,stroke-width:2px
 classDef stateWaiting   fill:#92400e,stroke:#fde68a,color:#fff,stroke-width:2px
+classDef stateError     fill:#b91c1c,stroke:#fecaca,color:#fff,stroke-width:2px
+classDef neutralDeep    fill:#1e293b,stroke:#cbd5e1,color:#fff,stroke-width:2px
 ```
 
 All pairs verified with `color_contrast.ts` (text >= 4.5:1, border >= 3:1).
