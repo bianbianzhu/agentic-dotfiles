@@ -96,5 +96,5 @@ external data file at refresh time. See `resources/rich-blocks.md`.
 
 ## For maintainers
 
-Design rationale, ADR log, and gotchas: [`CLAUDE.md`](CLAUDE.md). Dev loop:
+Design rationale, ADR log, and gotchas: [`MAINTAINERS.md`](MAINTAINERS.md). Dev loop:
 `make -C .claude/skills/richdocs/scripts fix ci`.

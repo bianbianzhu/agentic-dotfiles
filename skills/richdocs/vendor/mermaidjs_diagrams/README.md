@@ -88,4 +88,4 @@ make -C .claude/skills/mermaidjs_diagrams/scripts cli-demo
 ```
 
 See [`SKILL.md`](SKILL.md) for usage, [`resources/`](resources/) for deep dives,
-and [`scripts/CLAUDE.md`](scripts/CLAUDE.md) for the maintenance guide.
+and [`scripts/MAINTAINERS.md`](scripts/MAINTAINERS.md) for the maintenance guide.

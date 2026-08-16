@@ -17,7 +17,7 @@
   11.4.1): plain labels stop being markdown; only backtick strings
   (`["`**md**`"]`) opt in. A renderer-level fix here therefore means bumping
   the pinned mermaid to a release containing #7276 — do that only with the
-  full browser re-verification the CLAUDE.md extension checklist demands
+  full browser re-verification the MAINTAINERS.md extension checklist demands
   (the `foreignObject` clipping behaviour was tuned against 11.4.1).
 - **Authoring fix (use this):** never start a node/edge label with
   `digits.` + space or `-`/`*`/`+` + space. Rewrite `"1. Renumber ADRs"` as
@@ -31,5 +31,5 @@
   copy is refreshed wholesale (ADR-007, never cherry-pick), so the check was
   not patched locally; if the upstream `mermaidjs_diagrams` skill grows a
   list-marker label lint, it arrives here on the next re-vendor. Until then
-  this file and the CLAUDE.md gotcha are the guard: grep the source fences
+  this file and the MAINTAINERS.md gotcha are the guard: grep the source fences
   for `["'\`]\s*(\d+\.|[-*+]) ` before handoff.

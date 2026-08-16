@@ -22,7 +22,11 @@ evals-nightly:
 ci:
 	uvx ruff format --check evals/test_evals.py
 	uvx ruff check --line-length 120 evals/test_evals.py
-	$(MAKE) -C $(EVALKIT) test
+	@if [ -d "$(EVALKIT)" ]; then \
+		$(MAKE) -C $(EVALKIT) test; \
+	else \
+		echo "skip: _evalkit not present (source-repo maintainer tooling; not shipped with installs)"; \
+	fi
 
 fix:
 	uvx ruff format evals/test_evals.py
