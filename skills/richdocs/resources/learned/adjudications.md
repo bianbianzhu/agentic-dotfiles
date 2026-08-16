@@ -18,5 +18,5 @@ Treat these as already-decided. Do not re-litigate.
 - **How applied:** vendor copy at `vendor/mermaidjs_diagrams/`; all sibling
   references stripped from SKILL.md and `resources/*.md`; ADR-007 records
   the reversal and the refresh procedure; ADR-002's lateral-link approach
-  marked partially superseded. Upstream may be named only in CLAUDE.md
+  marked partially superseded. Upstream may be named only in MAINTAINERS.md
   (maintainer provenance for re-vendoring).

@@ -38,7 +38,7 @@ These are hard rules. A doc that breaks one is not done.
 
 The em-dash `—` (U+2014) is banned in all authored prose. It is the most
 recognisable AI-authorship tell, and it manufactures the exact smell the slop
-catalogue exists to prune (see `slop_smells.md` S4, and CLAUDE.md ADR-13). Use a
+catalogue exists to prune (see `slop_smells.md` S4, and MAINTAINERS.md ADR-13). Use a
 comma, a colon, parentheses, or split the sentence in two. An en-dash `–` in a
 genuine numeric range (`1.6–1.11`, `pp. 4–9`) stays legitimate.
 
